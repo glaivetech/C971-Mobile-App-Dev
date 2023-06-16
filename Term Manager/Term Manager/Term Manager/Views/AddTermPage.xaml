@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Term_Manager.Views.AddTermPage">
+    <NavigationPage.TitleView>
+        <Grid>
+            <Label x:Name ="_headerLabel" 
+                   Text="Add Term" 
+                   HorizontalOptions="Center" 
+                   FontSize="Large" 
+                   TextColor="#FFFFFF" HorizontalTextAlignment="Center" TranslationX="-32">
+            </Label>
+        </Grid>
+    </NavigationPage.TitleView>
+    <ContentPage.Content>
+        <StackLayout BackgroundColor="#054C7F" Margin="0">
+            <Label Text="Term Name" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+            <Entry x:Name="_termNameEntry" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></Entry>
+            <Label Text="Term Start" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+            <DatePicker x:Name="_termStart" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></DatePicker>
+            <Label Text="Term End" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+            <DatePicker x:Name="_termEnd" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></DatePicker>
+            <Button x:Name="_savetermButton" Text="Save" BackgroundColor="#0D99FF" Clicked="SaveTermButton_Clicked" HorizontalOptions="Center" Margin="0,50,0,0" Padding="90,15" VerticalOptions="End" TextColor="#FFFFFF" TranslationY="150"></Button>
+            <Button x:Name="_cancelButton" Text="Cancel" BackgroundColor="#F24822" Clicked="CancelButton_Clicked" HorizontalOptions="Center" Margin="0,-20,0,0" Padding="80,15" VerticalOptions="End" TextColor="#FFFFFF" BorderWidth="-1" TranslationY="200"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
