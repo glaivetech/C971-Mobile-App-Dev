@@ -1,14 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:Models="clr-namespace:Term_Manager.Models"
-             x:Class="Term_Manager.Views.MainCoursesPage">
-    <ContentPage.BindingContext>
-        <Models:Course/>
-    </ContentPage.BindingContext>
+             x:Class="Term_Manager.Views.MainAssessmentsPage">
     <NavigationPage.TitleView>
         <Grid>
             <Label x:Name ="_headerLabel" 
-                   Text="Courses" 
+                   Text="Assessments" 
                    HorizontalOptions="Center" 
                    FontSize="Large" 
                    TextColor="#FFFFFF"
@@ -18,14 +15,14 @@
     </NavigationPage.TitleView>
     <ContentPage.Content>
         <StackLayout BackgroundColor="#054C7F" VerticalOptions="Fill">
-            <ListView x:Name="_selectedTermList" VerticalOptions="FillAndExpand" RowHeight="120" SelectionMode="None">
+            <ListView x:Name="_selectedCourseList" VerticalOptions="FillAndExpand" RowHeight="120" SelectionMode="None">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="Models:Term">
+                    <DataTemplate x:DataType="Models:Course">
                         <ViewCell BindingContext="{Binding .}">
                             <Grid Padding="10">
                                 <Frame BackgroundColor="#87CCFF" HeightRequest="150" CornerRadius="0" HasShadow="True">
                                     <StackLayout Orientation="Vertical" Spacing="3">
-                                        <Label Text="{Binding Title}" FontSize="Medium" TextColor="White" Padding="0" HorizontalTextAlignment="Center"></Label>
+                                        <Label Text="{Binding Name}" FontSize="Medium" TextColor="White" Padding="0" HorizontalTextAlignment="Center"></Label>
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
                                             <Label Text="{Binding StartDate,  StringFormat='{}{0:MM/dd/yyyy}'}"  FontSize="Medium" TextColor="White" Padding="10,0" HorizontalTextAlignment="Center"></Label>
                                             <Label Text="->" TextColor="White" FontSize="Large" HorizontalTextAlignment="Center" HorizontalOptions="Center" Margin="0,-4,0,0"></Label>
@@ -38,20 +35,18 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Label x:Name="_noCourseslabel" Text="No Courses have been added."
+            <Label x:Name="_noAssessmentslabel" Text="No Assessments have been added."
                 VerticalOptions="StartAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
                 TextColor="White"
                 FontSize="20" IsEnabled="True" IsVisible="True"/>
-            <ListView x:Name="_courseListItems" VerticalOptions="FillAndExpand" RowHeight="120" SelectionMode="None">
+            <ListView x:Name="_assessmentListItems" VerticalOptions="FillAndExpand" RowHeight="120" SelectionMode="None">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="Models:Course">
+                    <DataTemplate x:DataType="Models:Assessment">
                         <ViewCell BindingContext="{Binding .}">
                             <ViewCell.ContextActions >
-                                <MenuItem x:Name="_courseItemEdit" Text="Edit" Clicked="Edit_Clicked" CommandParameter="{Binding .}"/>
-                                <MenuItem x:Name="_courseItemAssessments" Text="Assessments" Clicked="Assessments_Clicked" CommandParameter="{Binding .}"/>
-                                <MenuItem x:Name="_courseItemShare" Text="Share" Clicked="Share_Clicked" CommandParameter="{Binding .}"/>
-                                <MenuItem x:Name="_courseItemDelete" Text="Delete" Clicked="Delete_Clicked" CommandParameter="{Binding .}"/>
+                                <MenuItem x:Name="_assessmentItemEdit" Text="Edit" Clicked="Edit_Clicked" CommandParameter="{Binding .}"/>
+                                <MenuItem x:Name="_assessmentItemDelete" Text="Delete" Clicked="Delete_Clicked" CommandParameter="{Binding .}"/>
                             </ViewCell.ContextActions>
                             <Grid Padding="10">
                                 <Frame BackgroundColor="#4F7B9B" HeightRequest="150" CornerRadius="0" HasShadow="True">
@@ -70,12 +65,12 @@
                 </ListView.ItemTemplate>
                 <ListView.Footer>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                        <Button x:Name="_addCourseButton" Text="Add Course" BackgroundColor="#0D99FF" Clicked="AddCourseButton_Clicked" TextColor="White" Padding="80,15" HorizontalOptions="Center"></Button>
+                        <Button x:Name="_addAssessmentButton" Text="Add Assessment" BackgroundColor="#0D99FF" Clicked="AddAssessmentButton_Clicked" TextColor="White" Padding="80,15" HorizontalOptions="Center"></Button>
                     </StackLayout>
                 </ListView.Footer>
             </ListView>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                <Button x:Name="_noCoursesAddButton" Text="Add Course" BackgroundColor="#0D99FF" Clicked="AddCourseButton_Clicked" TextColor="White" Padding="80,15" HorizontalOptions="Center" Margin="0,0,0,50"></Button>
+                <Button x:Name="_noAssessmentsAddButton" Text="Add Assessment" BackgroundColor="#0D99FF" Clicked="AddAssessmentButton_Clicked" TextColor="White" Padding="80,15" HorizontalOptions="Center" Margin="0,0,0,50"></Button>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

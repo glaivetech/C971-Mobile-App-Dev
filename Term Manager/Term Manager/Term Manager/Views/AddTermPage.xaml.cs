@@ -36,6 +36,24 @@ namespace Term_Manager.Views
             DateTime start = _termStart.Date;
             DateTime end = _termEnd.Date;
 
+            if(string.IsNullOrEmpty(termName))
+            {
+                await DisplayAlert("Invalid Input", "Term name cannot be empty.", "Ok");
+                return;
+            }
+
+            if(start > end)
+            {
+                await DisplayAlert("Invalid Date", "Term start date cannot be after the term end date.", "Ok");
+                return;
+            }
+
+            if(end < start)
+            {
+                await DisplayAlert("Invalid Date", "Term end date cannot be before the term start date.", "Ok");
+                return;
+            }
+
             if (_termToUpdate == null)
             {
                 DatabaseService.Instance.AddTerm(termName, start, end);

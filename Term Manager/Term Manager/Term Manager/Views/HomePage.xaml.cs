@@ -8,6 +8,9 @@ using Term_Manager.Models;
 using Term_Manager.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Plugin.LocalNotifications;
+using static Term_Manager.Models.Course;
+using static Term_Manager.Models.Assessment;
 
 namespace Term_Manager.Views
 {
@@ -16,10 +19,9 @@ namespace Term_Manager.Views
     {
         private ObservableCollection<Term> _terms = new ObservableCollection<Term>();
 
-        private HomeState _currentState;
+        private PageState _currentState;
 
         public NavigationPage NavPage { get; set; }
-        public enum HomeState { NoTerms, TermsAvailable, EditMode }
 
         public HomePage()
         {
@@ -31,6 +33,83 @@ namespace Term_Manager.Views
 
             _terms = new ObservableCollection<Term>(DatabaseService.Instance.GetAllTerms());
             _termListItems.ItemsSource = _terms;
+
+            if (_terms.Count == 0)
+                AddEvalData();
+
+            HandleNotifications();
+        }
+
+        private void AddEvalData()
+        {
+            string termName = "Summer Term";
+            DateTime startDate = DateTime.Now.Date;
+            DateTime endDate = startDate.AddMonths(6);
+
+            DatabaseService.Instance.AddTerm(termName, startDate, endDate);
+
+            Term addedTerm = _terms[0];
+
+            string courseName = "C971 Mobile App Development";
+            DateTime courseStart = startDate;
+            DateTime courseEnd = startDate.AddMonths(1);
+            CourseStatus courseStatus = CourseStatus.In_Progress;
+            string instructorName = "Courtney Blakley";
+            string instructorPhone = "999-999-9999";
+            string instructorEmail = "cbla470@my.wgu.edu";
+
+            DatabaseService.Instance.AddCourse(courseName, courseStart, courseEnd, courseStatus, instructorName, instructorEmail, instructorPhone, _terms[0].ID, true, "This class will teach you how to make mobile apps in Xamarin");
+
+            Course addedCourse = DatabaseService.Instance.GetCoursesForTerm(addedTerm.ID)[0];
+
+            string assesment1Name = "LP1 - PA Mobile App";
+            DateTime assessmentStart1 = courseEnd.AddDays(-7);
+            DateTime assessmentEnd1 = courseEnd;
+            AssessmentType assessment1Type = AssessmentType.Performance;
+
+            string assesment2Name = "LP2 - OA Mobile App";
+            DateTime assessmentStart2 = courseEnd.AddDays(-7);
+            DateTime assessmentEnd2 = courseEnd;
+            AssessmentType assessment2Type = AssessmentType.Objective;
+
+            DatabaseService.Instance.AddAssessment(assesment1Name, assessment1Type, assessmentStart1, assessmentEnd1, addedCourse.ID, true);
+            DatabaseService.Instance.AddAssessment(assesment2Name, assessment2Type, assessmentStart2, assessmentEnd2, addedCourse.ID, true);
+        }
+
+        private void HandleNotifications()
+        {
+            List<Course> courses = DatabaseService.Instance.GetAllCourses();
+            List<Assessment> assessments = DatabaseService.Instance.GetAllAssessments();
+
+            foreach (Course course in courses)
+            {
+                if (course.Notifications)
+                {
+                    if (course.StartDate.Date == DateTime.Now.Date)
+                    {
+                        CrossLocalNotifications.Current.Show("Course Start", "Your Course starts today! Learning is fun!");
+                    }
+                    if (course.EndDate.Date == DateTime.Now.Date)
+                    {
+                        CrossLocalNotifications.Current.Show("Course End", "Your Course ends today! Finish strong!");
+                    }
+                }
+            }
+
+            foreach (Assessment assessment in assessments)
+            {
+                if (assessment.Notifications)
+                {
+                    if (assessment.StartDate.Date == DateTime.Now.Date)
+                    {
+                        CrossLocalNotifications.Current.Show("Assessment Start", "Your Assessment starts today! Do your best!");
+                    }
+                    if (assessment.EndDate.Date == DateTime.Now.Date)
+                    {
+                        CrossLocalNotifications.Current.Show("Assessment End", "Your Assessment ends today! You got this!");
+                    }
+                }
+            }
         }
 
         protected override void OnAppearing()
@@ -67,7 +146,6 @@ namespace Term_Manager.Views
             }
         }
 
-
         private bool UserHasTerms()
         {
             return DatabaseService.Instance.GetAllTerms().Count > 0;
@@ -77,18 +155,18 @@ namespace Term_Manager.Views
         {
             if (_terms.Count == 0)
             {
-                SwitchState(HomeState.NoTerms);
+                SwitchState(PageState.NoContent);
                 return;
             }
 
-            SwitchState(HomeState.TermsAvailable);
+            SwitchState(PageState.ContentAvaliable);
         }
 
-        private void SwitchState(HomeState state)
+        private void SwitchState(PageState state)
         {
             switch (state)
             {
-                case HomeState.NoTerms:
+                case PageState.NoContent:
                     {
                         _noTermslabel.IsEnabled = true;
                         _noTermslabel.IsVisible = true;
@@ -104,7 +182,7 @@ namespace Term_Manager.Views
 
                         break;
                     }
-                case HomeState.TermsAvailable:
+                case PageState.ContentAvaliable:
                     {
                         _noTermslabel.IsEnabled = false;
                         _noTermslabel.IsVisible = false;
@@ -142,7 +220,7 @@ namespace Term_Manager.Views
                     DatabaseService.Instance.RemoveTerm(termToDelete.ID);
 
                     if (_terms.Count == 0)
-                        SwitchState(HomeState.NoTerms);
+                        SwitchState(PageState.NoContent);
                 }
             }
         }

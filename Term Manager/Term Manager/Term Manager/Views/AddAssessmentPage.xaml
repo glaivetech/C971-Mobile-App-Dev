@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Term_Manager.Views.AddAssessmentPage">
+    <NavigationPage.TitleView>
+        <Grid>
+            <Label x:Name ="_headerLabel" 
+                   Text="Add Assessment" 
+                   HorizontalOptions="Center" 
+                   FontSize="Large" 
+                   TextColor="#FFFFFF" HorizontalTextAlignment="Center" TranslationX="-32">
+            </Label>
+        </Grid>
+    </NavigationPage.TitleView>
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout BackgroundColor="#054C7F" Margin="0">
+                <Label Text="Assessment Name" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+                <Entry x:Name="_assessmentNameEntry" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></Entry>
+                <Label Text="Assessment Start" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+                <DatePicker x:Name="_assessmentStart" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></DatePicker>
+                <Label Text="Assessment End" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+                <DatePicker x:Name="_assessmentEnd" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0" ></DatePicker>
+                <Label Text="Assessment Type" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+                <Picker x:Name="_assessmentTypePicker" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0">
+                    <Picker.Items>
+                        <x:String>Objective</x:String>
+                        <x:String>Performance</x:String>
+                    </Picker.Items>
+                </Picker>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Notifications" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
+                    <Switch x:Name="_notificationsSwitch"  HorizontalOptions="EndAndExpand" Margin="25,25,25,0" ></Switch>
+                </StackLayout>
+                <Button x:Name="_saveButton" Text="Save" BackgroundColor="#0D99FF" Clicked="SaveButton_Clicked" HorizontalOptions="Center" Margin="25,25,25,0" Padding="90,15"  TextColor="#FFFFFF"></Button>
+                <Button x:Name="_cancelButton" Text="Cancel" BackgroundColor="#F24822" Clicked="CancelButton_Clicked" HorizontalOptions="Center" Margin="25,25,25,25" Padding="80,15"  TextColor="#FFFFFF"></Button>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -8,6 +8,7 @@ using Term_Manager.Models;
 using Term_Manager.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
 
 namespace Term_Manager.Views
 {
@@ -19,10 +20,9 @@ namespace Term_Manager.Views
         private ObservableCollection<Term> _terms = new ObservableCollection<Term>();
         private ObservableCollection<Course> _courses;
 
-        private CoursePageState _currentState;
+        private PageState _currentState;
 
         public NavigationPage NavPage { get; set; }
-        public enum CoursePageState { NoCourses, CoursesAvailable, EditMode }
         public MainCoursesPage(Term term)
         {
             _term = term;
@@ -49,34 +49,51 @@ namespace Term_Manager.Views
         {
             if (_courses.Count == 0)
             {
-                SwitchState(CoursePageState.NoCourses);
+                SwitchState(PageState.NoContent);
                 return;
             }
 
-            SwitchState(CoursePageState.CoursesAvailable);
+            SwitchState(PageState.ContentAvaliable);
         }
 
         private void OnCourseAdded(Course course)
         {
-           
+            _courses.Add(course);
         }
 
         private void OnCourseUpdated(Course courseUpdated)
         {
+            Course foundCourse = _courses.Where(c => c.ID == courseUpdated.ID).FirstOrDefault();
 
+            if (foundCourse != null)
+            {
+                foundCourse.Name = courseUpdated.Name;
+                foundCourse.StartDate = courseUpdated.StartDate;
+                foundCourse.EndDate = courseUpdated.EndDate;
+                foundCourse.Status = courseUpdated.Status;
+                foundCourse.InstructorName = courseUpdated.InstructorName;
+                foundCourse.InstructorEmail = courseUpdated.InstructorEmail;
+                foundCourse.InstructorPhone = courseUpdated.InstructorPhone;
+                foundCourse.Notifications = courseUpdated.Notifications;
+                foundCourse.Notes = courseUpdated.Notes;
+            }
         }
 
-        private void OnCourseRemoved(Course courseRemoved)
+        private void OnCourseRemoved(int courseID)
         {
+            Course courseToRemove = _courses.Where(c => c.ID == courseID ).FirstOrDefault();
 
+            if (courseToRemove != null)
+            {
+                _courses.Remove(courseToRemove);
+            }
         }
 
-
-        private void SwitchState(CoursePageState state)
+        private void SwitchState(PageState state)
         {
             switch (state)
             {
-                case CoursePageState.NoCourses:
+                case PageState.NoContent:
                     {
                         _noCourseslabel.IsEnabled = true;
                         _noCourseslabel.IsVisible = true;
@@ -88,9 +105,11 @@ namespace Term_Manager.Views
                         _addCourseButton.IsEnabled = false;
                         _addCourseButton.IsVisible = false;
 
+                        _selectedTermList.VerticalOptions = LayoutOptions.FillAndExpand;
+
                         break;
                     }
-                case CoursePageState.CoursesAvailable:
+                case PageState.ContentAvaliable:
                     {
                         _noCourseslabel.IsEnabled = false;
                         _noCourseslabel.IsVisible = false;
@@ -102,6 +121,8 @@ namespace Term_Manager.Views
                         _addCourseButton.IsEnabled = true;
                         _addCourseButton.IsVisible = true;
 
+                        _selectedTermList.VerticalOptions = LayoutOptions.Fill;
+
                         break;
                     }
             }
@@ -110,21 +131,47 @@ namespace Term_Manager.Views
         }
         private void AddCourseButton_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new AddCoursePage());
+            Navigation.PushAsync(new AddCoursePage(_term.ID));
         }
 
         private void Assessments_Clicked(object sender, EventArgs e)
         {
+            Course selectedCourse = (sender as MenuItem).CommandParameter as Course;
+            Navigation.PushAsync(new MainAssessmentsPage(selectedCourse));
+        }
 
+        private async void Share_Clicked(object sender, EventArgs e)
+        {
+            Course selectedCourse = (sender as MenuItem).CommandParameter as Course;
+
+            string notes = $"Course Notes for: {selectedCourse.Name} \n Notes: {selectedCourse.Notes}";
+            ShareTextRequest req = new ShareTextRequest(notes, "Share Course Notes");
+
+            await Share.RequestAsync(req);
         }
 
         private void Edit_Clicked(object sender, EventArgs e)
         {
-
+            Course courseToUpdate = (sender as MenuItem).CommandParameter as Course;
+            Navigation.PushAsync(new AddCoursePage(_term.ID, courseToUpdate));
         }
-        private void Delete_Clicked(object sender, EventArgs e)
-        {
 
+        private async void Delete_Clicked(object sender, EventArgs e)
+        {
+            Course courseToDelete = (sender as MenuItem).CommandParameter as Course;
+
+            if (courseToDelete != null)
+            {
+                bool deleteCourse = await DisplayAlert("Delete Course", $"Are you sure you want to delete {courseToDelete.Name}? \n Deleting this course will delete all assigned assessments with it.", "Okay", "Cancel");
+
+                if (deleteCourse)
+                {
+                    DatabaseService.Instance.RemoveCourse(courseToDelete.ID);
+
+                    if (_courses.Count == 0)
+                        SwitchState(PageState.NoContent);
+                }
+            }
         }
     }
 }

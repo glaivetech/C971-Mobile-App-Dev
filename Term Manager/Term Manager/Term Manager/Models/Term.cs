@@ -49,6 +49,5 @@ namespace Term_Manager.Models
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(nameOfProperty));
         }
-
     }
 }

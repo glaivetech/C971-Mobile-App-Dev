@@ -24,10 +24,10 @@
                 <Label Text="Course Status" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>
                 <Picker x:Name="_courseStatus" BackgroundColor="White" HorizontalOptions="Fill" Margin="25,0">
                     <Picker.Items>
-                        <x:String>In Progress</x:String>
+                        <x:String>In_Progress</x:String>
                         <x:String>Completed</x:String>
                         <x:String>Dropped</x:String>
-                        <x:String>Plan To Take</x:String>
+                        <x:String>Plan_To_Take</x:String>
                     </Picker.Items>
                 </Picker>
                 <Label Text="Instructor Name" TextColor="#FFFFFF" Margin="25,25,0,0" FontSize="Medium"></Label>

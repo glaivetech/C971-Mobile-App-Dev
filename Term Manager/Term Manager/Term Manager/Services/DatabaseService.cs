@@ -1,6 +1,7 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Term_Manager.Models;
@@ -40,13 +41,29 @@ namespace Term_Manager.Services
 
         public event CourseAdd OnCourseAdded;
 
-        public delegate void CourseRemoved(Course course);
+        public delegate void CourseRemoved(int courseId);
 
         public event CourseRemoved OnCourseRemoved;
 
         public delegate void CourseUpdated(Course course);
 
         public event CourseUpdated OnCourseUpdated;
+
+        #endregion
+
+        #region Assessment Events
+
+        public delegate void AssessmentAdd(Assessment assessment);
+
+        public event AssessmentAdd OnAssessmentAdded;
+
+        public delegate void AssessmentRemoved(int assessmentId);
+
+        public event AssessmentRemoved OnAssessmentRemoved;
+
+        public delegate void AssessmentUpdated(Assessment assessment);
+
+        public event AssessmentUpdated OnAssessmentUpdated;
 
         #endregion
 
@@ -152,6 +169,7 @@ namespace Term_Manager.Services
             };
 
             _db.Insert(course);
+            OnCourseAdded?.Invoke(course);
         }
 
         public void UpdateCourse(int id, string name, DateTime startDate, DateTime endDate, CourseStatus status,
@@ -173,45 +191,52 @@ namespace Term_Manager.Services
                 course.Notes = notes;
 
                 _db.Update(course);
+                OnCourseUpdated?.Invoke(course);
             }
         }
 
         public void RemoveCourse(int id)
         {
-            List<Assessment> assessments = GetAllAssessments();
+            List<Assessment> assessments = GetAssessmentsForCourse(id);
 
             foreach (Assessment assessment in assessments)
             {
-                if (assessment.CourseID == id)
-                {
-                    RemoveAssessment(assessment.ID);
-                }
+                RemoveAssessment(assessment.ID);
             }
             _db.Delete<Course>(id);
+            OnCourseRemoved?.Invoke(id);
         }
 
         public List<Course> GetCoursesForTerm(int termId)
         {
-            var courses = _db.Table<Course>().Where(c=>c.Term == termId).ToList();
+            var courses = _db.Table<Course>().Where(c => c.Term == termId).ToList();
             return courses;
+        }
+
+        public List<Course> GetAllCourses()
+        {
+            return _db.Table<Course>().ToList();
         }
         #endregion
         #region Assessment
 
-        public void AddAssessment(string name, AssessmentType type, int courseID, bool notifs)
+        public void AddAssessment(string name, AssessmentType type, DateTime startDate, DateTime endDate, int courseID, bool notifs)
         {
             Assessment assessment = new Assessment()
             {
                 Name = name,
                 Type = type,
+                StartDate = startDate,
+                EndDate = endDate,
                 CourseID = courseID,
-                Notications = notifs
+                Notifications = notifs
             };
 
             _db.Insert(assessment);
+            OnAssessmentAdded?.Invoke(assessment);
         }
 
-        public void UpdateAssessment(int id, string name, AssessmentType type, int courseID, bool notifs)
+        public void UpdateAssessment(int id, string name, AssessmentType type, DateTime startDate, DateTime endDate, int courseID, bool notifs)
         {
             Assessment assessment = _db.Table<Assessment>().Where(a => a.ID == id).FirstOrDefault();
 
@@ -219,22 +244,30 @@ namespace Term_Manager.Services
             {
                 assessment.Name = name;
                 assessment.Type = type;
+                assessment.StartDate = startDate;
+                assessment.EndDate = endDate;
                 assessment.CourseID = courseID;
-                assessment.Notications = notifs;
+                assessment.Notifications = notifs;
 
                 _db.Update(assessment);
+                OnAssessmentUpdated?.Invoke(assessment);
             }
         }
 
         public void RemoveAssessment(int id)
         {
             _db.Delete<Assessment>(id);
+            OnAssessmentRemoved?.Invoke(id);
         }
 
+        public List<Assessment> GetAssessmentsForCourse(int courseId)
+        {
+            var assessments = _db.Table<Assessment>().Where(a => a.CourseID == courseId).ToList();
+            return assessments;
+        }
         public List<Assessment> GetAllAssessments()
         {
-            var assessments = _db.Table<Assessment>().ToList();
-            return assessments;
+            return _db.Table<Assessment>().ToList();
         }
         #endregion
     }
